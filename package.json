@@ -1,6 +1,6 @@
 {
   "name": "branch-env-vars",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "An easy way to set environment variables based on the building branch",
   "main": "src/index.js",
   "repository": "https://github.com/iamtheyammer/branch-env-vars",
