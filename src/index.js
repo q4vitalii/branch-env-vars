@@ -56,14 +56,11 @@ function parseBranchName(ref) {
 }
 
 function checkWildcardNames(branchName, possibleValues) {
-  let reg = null
-  core.debug('BEFORE POS VALUES = ', Object.keys(possibleValues))
   const match = Object.keys(possibleValues).filter((key) => { 
-      core.debug("---> Checking %s VS %s=%s", branchName, key)
       if (key.indexOf('*') !== -1) { 
-        reg = new RegExp(key.replace("*",".*?"));
+        const reg = new RegExp(key.replace("*",".*?"));
         if (reg.test(branchName)) {
-          core.debug("---> !!! MATCH FOUND %s VS %s", branchName, key)
+          core.debug("Branch name '%s' matches wildcard '%s'", branchName, key)
           return true
         }
       }
@@ -136,7 +133,6 @@ try {
       if (!canOverwrite && !!process.env[name]) {
         return;
       }
-      core.debug("---> Checking wildcard")      
       const wildcard = checkWildcardNames(branchName, possibleValues)
       const value = possibleValues[branchName] || wildcard || possibleValues["!default"];
       if (!value) {
