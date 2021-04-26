@@ -55,6 +55,20 @@ function parseBranchName(ref) {
   return branchName;
 }
 
+function checkWildcardNames(branchName, possibleValues) {
+  let reg = null
+  const match = Object.keys(possibleValues).filter((key) => { 
+      if (key.indexOf('*') !== -1) { 
+        reg = new RegExp(key.replace("*",".*?"));
+        if (reg.test(branchName)) {
+          return true
+        }
+      }
+  })
+
+  return (match[0] && possibleValues[match[0]]) || null
+}
+
 function parseEnvVarPossibilities(envVars) {
   return Object.entries(envVars)
     .filter(
@@ -120,7 +134,7 @@ try {
         return;
       }
 
-      const value = possibleValues[branchName] || possibleValues["!default"];
+      const value = possibleValues[branchName] || checkWildcardNames(branchName, possibleValues) || possibleValues["!default"];
       if (!value) {
         if (setEmptyVars) {
           core.exportVariable(name, "");

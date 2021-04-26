@@ -22,8 +22,8 @@ jobs:
 
       - name: Install dependencies and compile code
         run: |
-          yarn install
-          yarn build
+          npm ci
+          npm run build
 
       - name: Set some branch-based environment variables
         uses: ./
