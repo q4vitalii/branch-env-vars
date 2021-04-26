@@ -11,9 +11,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Get node version
+      - name: Read nodejs version from package.json
         run: |
-          echo "::set-env name=PROJECT_NODE_VERSION::$(cat $GITHUB_WORKSPACE/.nvmrc)"
+          echo "NODE_VERSION=$(node -p -e "require('./package.json').engines.node")" >> $GITHUB_ENV
 
       - name: Setup Node.js version ${{ env.PROJECT_NODE_VERSION }}
         uses: actions/setup-node@v2.1.0
@@ -32,6 +32,7 @@ jobs:
             master:value for KITCHEN_SINK on the master branch
             test-branch:value for KITCHEN_SINK on test-branch
             !pr:KITCHEN_SINK value for a pull request
+            release_candidate_*:KITCHEN_SINK Release Candidate
             !tag:KITCHEN_SINK value for a tag
             !default:default value for KITCHEN_SINK
           COMMENT_EMPTY_LINE_TEST: |
