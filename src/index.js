@@ -136,8 +136,9 @@ try {
       if (!canOverwrite && !!process.env[name]) {
         return;
       }
-
-      const value = possibleValues[branchName] || checkWildcardNames(branchName, possibleValues) || possibleValues["!default"];
+      core.debug("---> Checking wildcard")      
+      const wildcard = checkWildcardNames(branchName, possibleValues)
+      const value = possibleValues[branchName] || wildcard || possibleValues["!default"];
       if (!value) {
         if (setEmptyVars) {
           core.exportVariable(name, "");
