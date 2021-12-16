@@ -44,7 +44,7 @@ function parseBranchName(ref) {
     case "heads":
       branchName = refSourceName;
       break;
-    case "pulls":
+    case "pull":
       branchName = "!pr";
       break;
     case "tags":
@@ -124,17 +124,24 @@ try {
   canOverwrite = core.getInput("bevOverwrite") === "true";
   noRefAction = core.getInput("bevActionOnNoRef");
   setEmptyVars = core.getInput("bevSetEmptyVars") === "true";
+  // prOverwrite = core.getInput("prOverwrite") === "true";
 
   const ref = process.env.GITHUB_REF;
+  const baseRef = process.env.GITHUB_BASE_REF;
   const branchName = parseBranchName(ref);
+
+  console.log(">>>baseRef", baseRef);
+  console.log(">>>ref", ref);
+  console.log(">>>branchName", branchName);
 
   const vars = parseEnvVarPossibilities(process.env).forEach(
     ([name, possibleValues]) => {
+      console.log(name, possibleValues)
       if (!canOverwrite && !!process.env[name]) {
         return;
       }
       const wildcard = checkWildcardNames(branchName, possibleValues)
-      const value = possibleValues[branchName] || wildcard || possibleValues["!default"];
+      const value = possibleValues[branchName] || wildcard || (/*prOverwrite && */baseRef && branchName == "!pr" && possibleValues["!pr|" + baseRef]) || possibleValues["!default"];
       if (!value) {
         if (setEmptyVars) {
           core.exportVariable(name, "");

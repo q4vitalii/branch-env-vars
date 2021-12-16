@@ -9,6 +9,10 @@ inputs:
     description: 'Overwrite other, already-set environment variables with the same name'
     default: true
     required: false
+  # prOverwrite:
+  #   description: 'Overwrite !pr with GITHUB_BASE_REF'
+  #   default: false
+  #   required: false  
   bevActionOnNoRef:
     description: |
       What to do when there is no GITHUB_REF: 'error' (fail the build), 'warn' (print a warning but pass), 'continue' (pass and continue silently)
