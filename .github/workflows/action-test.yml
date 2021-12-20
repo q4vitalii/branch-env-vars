@@ -32,6 +32,7 @@ jobs:
             master:value for KITCHEN_SINK on the master branch
             test-branch:value for KITCHEN_SINK on test-branch
             !pr:KITCHEN_SINK value for a pull request
+            !pr|master:value for master PR
             release_candidate_*:KITCHEN_SINK Release Candidate
             !tag:KITCHEN_SINK value for a tag
             !default:default value for KITCHEN_SINK
@@ -45,6 +46,14 @@ jobs:
             master:${{ secrets.TEST_SECRET }}
             !default:${{ secrets.TEST_SECRET}} but its default
           STATIC_TEST: 'just a static env var here'
+          MASTER_PR: |
+            !pr|master:value for master PR
+            !default:default value for MASTER_PR
+          TRIM_TEST: |
+            branch-pr :value for branch-pr PR (trim)
+            master :value for master merge (trim)
+            !default:default value for MASTER_PR
+            !pr|master :value for master PR (trim)
 
       - name: Print out those variables!
         run: |
@@ -52,3 +61,5 @@ jobs:
           echo "COMMENT_EMPTY_LINE_TEST: $COMMENT_EMPTY_LINE_TEST"
           echo "SECRET_TEST: $SECRET_TEST"
           echo "STATIC_TEST: $STATIC_TEST"
+          echo "MASTER_PR: $MASTER_PR"
+          echo "TRIM_TEST: $TRIM_TEST"
