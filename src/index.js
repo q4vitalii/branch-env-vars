@@ -44,7 +44,7 @@ function parseBranchName(ref) {
     case "heads":
       branchName = refSourceName;
       break;
-    case "pulls":
+    case "pull":
       branchName = "!pr";
       break;
     case "tags":
@@ -100,18 +100,18 @@ function parseEnvVarPossibilities(envVars) {
         if (pair.trim().startsWith("#") || !pair.trim().length) {
           return acc;
         }
-
-        const separatorLoc = pair.indexOf(":");
+        const trimmedPair = pair.split(":").map((v) => v.trim()).join(":");
+        const separatorLoc = trimmedPair.indexOf(":");
         if (separatorLoc === -1) {
           throw new Error(
-            `Invalid value for ${transformedName}: ${pair} does not contain a colon`
+            `Invalid value for ${transformedName}: ${trimmedPair} does not contain a colon`
           );
         }
 
         // what environment variable name the values are for
-        const valueFor = pair.substring(0, separatorLoc).trim();
+        const valueFor = trimmedPair.substring(0, separatorLoc);
 
-        acc[valueFor] = pair.substring(separatorLoc + 1);
+        acc[valueFor] = trimmedPair.substring(separatorLoc + 1);
 
         return acc;
       }, {});
@@ -126,6 +126,7 @@ try {
   setEmptyVars = core.getInput("bevSetEmptyVars") === "true";
 
   const ref = process.env.GITHUB_REF;
+  const baseRef = process.env.GITHUB_BASE_REF;
   const branchName = parseBranchName(ref);
 
   const vars = parseEnvVarPossibilities(process.env).forEach(
@@ -134,7 +135,9 @@ try {
         return;
       }
       const wildcard = checkWildcardNames(branchName, possibleValues)
-      const value = possibleValues[branchName] || wildcard || possibleValues["!default"];
+      const value = possibleValues[branchName.trim()] ||
+        wildcard || (baseRef && branchName == "!pr" && possibleValues["!pr|" + baseRef]) ||
+        possibleValues["!default"];
       if (!value) {
         if (setEmptyVars) {
           core.exportVariable(name, "");
